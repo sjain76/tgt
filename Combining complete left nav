@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Thu Dec 27 16:15:41 2018
-
-@author: z003b4w
-"""
 
 from lxml import html
 import requests
