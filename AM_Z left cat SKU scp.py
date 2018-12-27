@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Thu Dec 20 00:34:35 2018
 
-@author: sidharthjain
-"""
+This code is basically when you have got the links for left cat nav using previous code and now you only want sku count of those links.
+
 
 from lxml import html
 import requests
