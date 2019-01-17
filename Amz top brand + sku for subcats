@@ -1,0 +1,233 @@
+
+
+from lxml import html
+import requests
+import pandas as pd
+import numpy as np 
+from urllib.request import Request, urlopen
+from bs4 import BeautifulSoup
+from contextlib import suppress
+from time import sleep
+from random import randint
+from time import time
+
+
+#The excel file below contains brand name and link to that brand name store on Amazon
+
+
+links1="https://www.amazon.com/s/ref=lp_3412711_ex_n_1?rh=n%3A3375251%2Cn%3A%213375301%2Cn%3A10971181011%2Cn%3A706809011%2Cn%3A3412421&bbn=3412421&ie=UTF8&qid=1547616697"
+import requests
+from lxml.html import fromstring
+
+main_link=[]        
+link=[]
+cat_name=[]
+tag_name=[]
+sku_count_final=[]
+links1
+
+seller1=[]
+brand1=[]
+sku_brand1=[]
+link_brand1=[]
+final_count_brand1=[]
+sku_count1=[]
+category_name_brand=[]
+category_name_seller=[]
+sku_seller1=[]
+link_seller1=[]
+
+#################### ALL LEFT NAV HTML ##########################        
+headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36)'}
+page = requests.get(links1,headers=headers)
+contents = page.content     
+print(contents)
+soup = BeautifulSoup(contents, "lxml")
+soup.prettify()
+
+cat_name=soup.title
+cat_name_final=cat_name.text
+        
+prod_title=soup.find_all('a',attrs={'class':'a-link-normal s-ref-text-link'})
+        
+all_left_nav_html=prod_title
+print(all_left_nav_html)
+            
+
+################################ SUBCATS ############################  ############################          
+            
+############## SUBCAT LINKS######################
+
+sub_cat_name_all=[]
+sub_cat_link_all=[]
+
+j=soup.find_all('ul',attrs={'class':'a-unordered-list a-nostyle a-vertical s-ref-indent-two'})
+k=j[0]
+l=k.find_all('a',attrs={'class':'a-link-normal s-ref-text-link'})
+
+for i in range(len(l)):
+    m=l[i]
+    subcat_link='https://www.amazon.com'+ m['href']
+    print(subcat_link)
+    sub_cat=m.text
+    sub_cat_name_all.append(sub_cat)
+    sub_cat_link_all.append(subcat_link)
+    
+################### SUBCAT BRANDS ####################
+for index, j in enumerate(sub_cat_link_all):
+    with suppress(Exception):
+
+#################### ALL LEFT NAV HTML ##########################        
+        headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36)'}
+        page = requests.get(j,headers=headers)
+        print(index)
+        
+        contents = page.content 
+    
+        print(contents)
+        soup = BeautifulSoup(contents, "lxml")
+        soup.prettify()
+
+        cat_name=soup.title
+        cat_name_final=cat_name.text
+        
+        all_left_nav_html=soup.find_all('a',attrs={'class':'a-link-normal s-ref-text-link'})
+        
+        
+        print(all_left_nav_html)
+    
+############################### BRANDS #################################    
+
+################ Below 4 lines will get brand see more button url ##########3
+
+        import re
+        brand_button_find=soup.find_all("a", href=re.compile("lbr_brands"))[0]
+        
+        see_more_button_url_brand='https://www.amazon.com'+ brand_button_find['href']
+        see_more_button_url_brand
+
+    ############ Going into top brands page using below code ########
+    
+        brand_page_ping = requests.get(see_more_button_url_brand,headers=headers)
+        sleep(randint(10,15))
+            
+        contents_brand_page = brand_page_ping.content 
+            #print(contents)
+        soup_new_brand = BeautifulSoup(contents_brand_page, "lxml")
+        soup_new_brand.prettify()
+ 
+################## ALL TOP BRANDS LIST HTML ############
+       
+        link_to_brand_page_for_that_link=soup_new_brand.find_all('span',attrs={'class':'a-list-item'})
+        link_to_brand_page_for_that_link
+        
+
+############ EXTRACTING BRAND NAME, SKU in BRACKETS, LINK TO ALL BRANDS #########         
+        for i in range(len(link_to_brand_page_for_that_link)):
+            t=link_to_brand_page_for_that_link[i]
+            name_of_brands=t.find('span',attrs={'class':'refinementLink'})
+            name_of_individual_brand=name_of_brands.text
+            print(name_of_individual_brand)
+                
+            count_of_products_per_brand=t.find('span',attrs={'class':'narrowValue'})
+            count_of_individual_brand_skucount=count_of_products_per_brand.text
+            print(count_of_individual_brand_skucount)
+                
+            link_to_specific_brand=t.find('a',attrs={'class':'a-link-normal'})
+            link_to_specific_brand_final='https://www.amazon.com'+ link_to_specific_brand['href']
+            print(link_to_specific_brand_final)
+                
+                #brand_page_ping_new = requests.get(link_to_specific_brand_final,headers=headers)
+                #sleep(randint(10,15))
+                #w=brand_page_ping_new.content
+                
+                #soup_new_brand_new = BeautifulSoup(w, "lxml")
+                #soup_new_brand_new.prettify()
+                
+                #sku_count_find_new=soup_new_brand_new.find('div',attrs={'class':'s-result-count'})
+                #sku_count_new=sku_count_find_new.text
+                #sku_count_new
+                
+            category_name_brand.append(cat_name_final)
+            brand1.append(name_of_individual_brand)
+            sku_brand1.append(count_of_individual_brand_skucount)
+            link_brand1.append(link_to_specific_brand_final)
+            g="subcategory"
+            #sku_count1.append(sku_count_new) 
+            
+            
+            
+#################### SUBCAT SELLERS #########################################
+
+        import re
+        seller_button_find=soup.find_all("a", href=re.compile("merchantbin"))[0]
+        
+        see_more_button_url_seller='https://www.amazon.com'+ seller_button_find['href']
+        see_more_button_url_seller
+
+    ############ Going into top seller page using below code ########
+    
+        seller_page_ping = requests.get(see_more_button_url_seller,headers=headers)
+        sleep(randint(10,15))
+            
+        contents_seller_page = seller_page_ping.content 
+            #print(contents)
+        soup_new_seller = BeautifulSoup(contents_seller_page, "lxml")
+        soup_new_seller.prettify()
+ 
+################## ALL TOP SELLER LIST HTML ############
+       
+        link_to_seller_page_for_that_link=soup_new_seller.find_all('span',attrs={'class':'a-list-item'})
+        link_to_seller_page_for_that_link
+        
+
+############ EXTRACTING SELLER NAME, SKU in BRACKETS, LINK TO ALL SELLERS #########         
+        for i in range(len(link_to_seller_page_for_that_link)):
+            t_seller=link_to_seller_page_for_that_link[i]
+            name_of_seller=t_seller.find('span',attrs={'class':'refinementLink'})
+            name_of_individual_seller=name_of_seller.text
+            print(name_of_individual_seller)
+                
+            count_of_products_per_seller=t.find('span',attrs={'class':'narrowValue'})
+            count_of_individual_seller_skucount=count_of_products_per_seller.text
+            print(count_of_individual_seller_skucount)
+                
+            link_to_specific_seller=t_seller.find('a',attrs={'class':'a-link-normal'})
+            link_to_specific_seller_final='https://www.amazon.com'+ link_to_specific_seller['href']
+            print(link_to_specific_seller_final)
+                
+                #brand_page_ping_new = requests.get(link_to_specific_brand_final,headers=headers)
+                #sleep(randint(10,15))
+                #w=brand_page_ping_new.content
+                
+                #soup_new_brand_new = BeautifulSoup(w, "lxml")
+                #soup_new_brand_new.prettify()
+                
+                #sku_count_find_new=soup_new_brand_new.find('div',attrs={'class':'s-result-count'})
+                #sku_count_new=sku_count_find_new.text
+                #sku_count_new
+                
+            category_name_seller.append(cat_name_final)
+            seller1.append(name_of_individual_seller)
+            sku_seller1.append(count_of_individual_seller_skucount)
+            link_seller1.append(link_to_specific_seller_final)
+            g="subcategory"
+            #sku_count1.append(sku_count_new) 
+            
+######################## AFTER THIS ONLY DF OR EXCEL CREATION ###########################
+            
+            
+df_brand = pd.DataFrame({'category_name':category_name_brand, 'brand_name': brand1,'sku count next to brand': sku_brand1,'link to individual brand':link_brand1,'category or subcategory':g})
+df_seller= pd.DataFrame({'category_name':category_name_seller, 'seller_name': seller1,'sku count next to seller': sku_seller1,'link to individual seller':link_seller1,'category or subcategory':g})
+
+
+import pandas as pd
+
+writer = pd.ExcelWriter('Amazon ice hockey brand and sellers.xlsx', engine='xlsxwriter',options={'strings_to_urls': False})
+df_brand.to_excel(writer, sheet_name='Brands')
+df_seller.to_excel(writer, sheet_name='Sellers')
+writer.save()
+
+import os
+cwd = os.getcwd()
+cwd
