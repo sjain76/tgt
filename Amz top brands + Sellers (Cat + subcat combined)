@@ -1,23 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Jan 16 23:49:21 2019
-
-@author: sidharthjain
-"""
-
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Jan 16 23:22:46 2019
-
-@author: sidharthjain
-"""
-
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Jan 16 02:04:13 2019
+Created on Sat Jan 19 22:42:26 2019
 
 @author: sidharthjain
 """
@@ -179,6 +163,7 @@ for index, j in enumerate(sub_cat_link_all):
 #################### ALL LEFT NAV HTML ##########################        
         headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36)'}
         page = requests.get(j,headers=headers)
+        sleep(randint(10,15))
         print(index)
         
         contents = page.content 
@@ -291,7 +276,7 @@ for index, j in enumerate(sub_cat_link_all):
             name_of_individual_seller=name_of_seller.text
             print(name_of_individual_seller)
                 
-            count_of_products_per_seller=t.find('span',attrs={'class':'narrowValue'})
+            count_of_products_per_seller=t_seller.find('span',attrs={'class':'narrowValue'})
             count_of_individual_seller_skucount=count_of_products_per_seller.text
             print(count_of_individual_seller_skucount)
                 
@@ -323,16 +308,12 @@ for index, j in enumerate(sub_cat_link_all):
             
 df_brand = pd.DataFrame({'category_name':category_name_brand, 'brand_name': brand1,'sku count next to brand': sku_brand1,'link to individual brand':link_brand1,'category or subcategory':g,'subcategory SKU count':subcategory_SKU_count_brand})
 df_seller= pd.DataFrame({'category_name':category_name_seller, 'seller_name': seller1,'sku count next to seller': sku_seller1,'link to individual seller':link_seller1,'category or subcategory':g,'subcategory SKU count':subcategory_SKU_count_seller})
-df_completecategory_topbrands=pd.DataFrame({'category_name':category_name_categorypage, 'category or subcategory':c,'brand_name': brand1_categorypage,'sku count next to brand': sku_brand1_categorypage})
+df_completecategory_topbrands=pd.DataFrame({'category_name':category_name_categorypage, 'category or subcategory':c,'brand_name': brand1_categorypage,'sku count next to brand': sku_brand1_categorypage,'link to these brands':link_brand1_categorypage})
 
 import pandas as pd
 
-writer = pd.ExcelWriter('Amazon small appliances - All2.xlsx', engine='xlsxwriter',options={'strings_to_urls': False})
+writer = pd.ExcelWriter('Amazon ice2.xlsx', engine='xlsxwriter',options={'strings_to_urls': False})
 df_brand.to_excel(writer, sheet_name='Brands')
 df_seller.to_excel(writer, sheet_name='Sellers')
 df_completecategory_topbrands.to_excel(writer, sheet_name='whole cat top brands')
 writer.save()
-
-import os
-cwd = os.getcwd()
-cwd
