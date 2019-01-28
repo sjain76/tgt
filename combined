@@ -1,0 +1,537 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Jan 26 11:24:51 2019
+
+"""
+
+from lxml import html
+import requests
+import pandas as pd
+import numpy as np 
+from urllib.request import Request, urlopen
+from bs4 import BeautifulSoup
+from contextlib import suppress
+from time import sleep
+from random import randint
+from time import time
+
+
+#The excel file below contains brand name and link to that brand name store on Amazon
+q= 'http://api.scraperapi.com'
+
+links1="https://www.amazon.com/sleeping-bags-and-camp-bedding/b?ie=UTF8&node=3401611"
+
+import requests
+from lxml.html import fromstring
+
+link=[]
+cat_name=[]
+tag_name=[]
+sku_count_final=[]
+links1
+
+subcategory_name_brand=[]
+brand1=[]
+sku_brand1=[]
+link_brand1=[]
+subcategory_SKU_count_brand=[]
+
+
+category_name_categorypage=[]
+brand1_categorypage=[]
+sku_brand1_categorypage=[]
+link_brand1_categorypage=[]
+
+#########################
+seller1=[]
+brand1=[]
+sku_brand1=[]
+link_brand1=[]
+final_count_brand1=[]
+sku_count1=[]
+category_name_brand=[]
+category_name_seller=[]
+sku_seller1=[]
+link_seller1=[]
+subcategory_SKU_count_brand=[]
+subcategory_SKU_count_seller=[]
+cat_or_subcat_list=[]
+
+################## PINGING CATEGORY PAGE #####################
+#################### ALL LEFT NAV HTML ##########################        
+#headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36)'}
+
+payload = {'key': 'e0a42cf476b6ac88254a90bd4d89fa7c', 'url':links1, 'us_only': 'true'}
+page = requests.get(q,params=payload,timeout=60)
+
+sleep(randint(10,15))
+page
+contents = page.content     
+#print(contents)
+soup = BeautifulSoup(contents, "lxml")
+#soup.prettify()
+
+cat_name=soup.title
+cat_name_final=cat_name.text
+print(cat_name_final)
+        
+all_left_nav_html=soup.find_all('a',attrs={'class':'a-link-normal s-ref-text-link'})
+        
+#print(all_left_nav_html)
+            
+c="category"
+####################### EXTRACTIN CATEGORY TOP BRANDS BEFORE GOING TO SUB CATEGORY #################
+import re
+brand_button_find_categorypage=soup.find_all("a", href=re.compile("lbr_brands"))[0]        
+see_more_button_url_brand_categorypage='https://www.amazon.com'+ brand_button_find_categorypage['href']
+
+
+payload = {'key': 'e0a42cf476b6ac88254a90bd4d89fa7c', 'url':see_more_button_url_brand_categorypage, 'us_only': 'true'}
+brand_page_ping_categorypage = requests.get(q,params=payload,timeout=60)
+brand_page_ping_categorypage
+sleep(randint(10,15))
+            
+contents_brand_page_categorypage = brand_page_ping_categorypage.content 
+            #print(contents)
+soup_new_brand_categorypage = BeautifulSoup(contents_brand_page_categorypage, "lxml")
+#soup_new_brand_categorypage.prettify()
+ 
+################## ALL TOP BRANDS LIST HTML ############
+       
+link_to_brand_page_for_that_link_categorypage=soup_new_brand_categorypage.find_all('span',attrs={'class':'a-list-item'})
+link_to_brand_page_for_that_link_categorypage
+        
+
+############ EXTRACTING BRAND NAME, SKU in BRACKETS, LINK TO ALL BRANDS #########         
+for i in range(len(link_to_brand_page_for_that_link_categorypage)):
+            
+            
+            
+    t_categorypage=link_to_brand_page_for_that_link_categorypage[i]
+    name_of_brands_categorypage=t_categorypage.find('span',attrs={'class':'refinementLink'})
+    name_of_individual_brand_categorypage=name_of_brands_categorypage.text
+    print(name_of_individual_brand_categorypage)
+    count_of_products_per_brand_categorypage=t_categorypage.find('span',attrs={'class':'narrowValue'})
+    count_of_individual_brand_skucount_categorypage=count_of_products_per_brand_categorypage.text
+    print(count_of_individual_brand_skucount_categorypage)
+    link_to_specific_brand_categorypage=t_categorypage.find('a',attrs={'class':'a-link-normal'})
+    link_to_specific_brand_final_categorypage='https://www.amazon.com'+ link_to_specific_brand_categorypage['href']
+    print(link_to_specific_brand_final_categorypage)
+    #brand_page_ping_new = requests.get(link_to_specific_brand_final,headers=headers)
+    #sleep(randint(10,15))
+    #w=brand_page_ping_new.content
+            
+    #soup_new_brand_new = BeautifulSoup(w, "lxml")
+    #soup_new_brand_new.prettify()
+            
+    #sku_count_find_new=soup_new_brand_new.find('div',attrs={'class':'s-result-count'})
+    #sku_count_new=sku_count_find_new.text
+    #sku_count_new
+            
+    category_name_categorypage.append(cat_name_final)
+    brand1_categorypage.append(name_of_individual_brand_categorypage)
+    sku_brand1_categorypage.append(count_of_individual_brand_skucount_categorypage)
+    link_brand1_categorypage.append(link_to_specific_brand_final_categorypage)
+    g="category"
+    cat_or_subcat=cat_or_subcat_list.append(g)
+    #sku_count1.append(sku_count_new)
+
+df_brand = pd.DataFrame({ 'category_name':category_name_categorypage,'brand_name': brand1_categorypage,'sku count next to brand': sku_brand1_categorypage,'link to individual brand':link_brand1_categorypage,'category or subcategory':g})
+
+link_brand1_categorypage
+
+###################### BRAND INDEPTH DETAILS #############
+###################### BRAND INDEPTH DETAILS #############
+###################### BRAND INDEPTH DETAILS #############
+###################### BRAND INDEPTH DETAILS #############
+###################### BRAND INDEPTH DETAILS #############
+###################### BRAND INDEPTH DETAILS #############
+###################### BRAND INDEPTH DETAILS #############
+###################### BRAND INDEPTH DETAILS #############
+
+#subcat_name_list=[]
+#subcat_link_list=[]
+#subcat_brand_button_list=[]
+#subcat_seller_button_list=[]
+#visible_subcat_name_list=[]
+#visible_subcat_link_list=[]
+#visible_subcat_brand_seller_list=[]
+
+brand_indepth_visible_subcat_name_list=[]
+brand_indepth_visible_subcat_link_list=[]
+indepth_sku_count_final_list=[]
+brand_indepth_visible_everything_list=[]
+indepth_brand_name_list=[]
+brand_indepth_seller_button_list=[]
+indepth_seemore_sellerbutton_brandname_list=[]
+indepth_seemore_sellerbutton_brandlink_list=[]
+brand_indepth_visible_everything_link_list=[]
+brand_indepth_seller_button_final_list=[]
+
+brand_indepth_visible_all_brand_seller_html1_list=[]
+
+brand_indepth_soup_list=[]
+
+
+for j in range(len(link_brand1_categorypage)):
+    with suppress(Exception):
+        url9=link_brand1_categorypage[j]
+        #url9
+        indepth_brand_name=brand1_categorypage[j]
+        print(indepth_brand_name)
+#        indepth_title=
+        payload = {'key': 'e0a42cf476b6ac88254a90bd4d89fa7c', 'url': url9,'us_only': 'true'}
+        brand_indepth_ping = requests.get(q,params=payload,timeout=60)        
+        print(brand_indepth_ping)
+        sleep(randint(10,15))
+        #subcat_page_ping
+#        page = requests.get(j,headers=headers)
+#        sleep(randint(10,15))
+        #print(index)
+        
+        brand_indepth_contents = brand_indepth_ping.content 
+        #print(subcat_page_contents)
+        brand_indepth_soup = BeautifulSoup(brand_indepth_contents, "lxml")
+        
+        brand_indepth_visible_all_brand_seller_html1=brand_indepth_soup.find_all("span",attrs={'data-action':'s-ref-selected'})
+        #brand_indepth_visible_all_brand_seller_html1
+        
+        indepth_sku_count=brand_indepth_soup.find('span',attrs={'id':'s-result-count'})
+        indepth_sku_count_final=indepth_sku_count.text
+        indepth_sku_count_final
+
+
+
+    
+        for r in range(len(brand_indepth_visible_all_brand_seller_html1)):
+            with suppress(Exception):    
+                brand_indepth_visible_all_brand_seller_subcat=brand_indepth_visible_all_brand_seller_html1[r]
+                #print(brand_indepth_visible_all_brand_seller_subcat)
+                brand_indepth_visible_all_brand_seller_subcat_final=brand_indepth_visible_all_brand_seller_subcat.text
+                #**#
+                brand_indepth_visible_everything_list.append(brand_indepth_visible_all_brand_seller_subcat_final)
+                #**#
+                brand_indepth_visible_subcat_link_list.append(url9)
+                #**#
+                indepth_sku_count_final_list.append(indepth_sku_count_final)
+                #**#
+                indepth_brand_name_list.append(indepth_brand_name)
+                
+                others=brand_indepth_visible_all_brand_seller_subcat['data-s-ref-selected']
+                xx=len(others)
+                yy=xx-2
+                others_name='https://www.amazon.com'+ others[8:yy]
+                
+                #print(others_name)
+                zz=others_name.replace("amp;", "")
+                zz
+                #**#
+                brand_indepth_visible_everything_link_list.append(zz)
+                
+
+        ######### FOR ALL 
+        brand_indepth_seller_button=brand_indepth_soup.find_all("a", href=re.compile("merchantbin"))[0]
+        brand_indepth_seller_button_final='https://www.amazon.com'+ brand_indepth_seller_button['href']
+        print(brand_indepth_seller_button_final)
+        brand_indepth_seller_button_final_list.append(brand_indepth_seller_button_final)
+        #brand_indepth_seller_button
+ 
+        indepth_seemore_sellerbutton_brandname_list.append(indepth_brand_name)
+        indepth_seemore_sellerbutton_brandlink_list.append(url9)
+        
+df_indepth_seemore_sellerbutton = pd.DataFrame({'brand name':indepth_seemore_sellerbutton_brandname_list, 'brand link': indepth_seemore_sellerbutton_brandlink_list,'see more seller button':brand_indepth_seller_button_final_list})
+            
+df_indepth_brand = pd.DataFrame({'brand name':indepth_brand_name_list, 'brand link': brand_indepth_visible_subcat_link_list,'brand sku count': indepth_sku_count_final_list,'everything list':brand_indepth_visible_everything_list,'visible link':brand_indepth_visible_everything_link_list})
+            
+ 
+
+####################### BRAND INDEPTH ENDS #######################
+####################### BRAND INDEPTH ENDS #######################
+####################### BRAND INDEPTH ENDS #######################
+####################### BRAND INDEPTH ENDS #######################
+####################### BRAND INDEPTH ENDS #######################
+####################### BRAND INDEPTH ENDS #######################
+####################### BRAND INDEPTH ENDS #######################
+####################### BRAND INDEPTH ENDS #######################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##################################################################################################################3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+################################ SUBCATS ############################  ############################          
+            
+############## SUBCAT LINKS######################
+
+sub_cat_name_all=[]
+sub_cat_link_all=[]
+
+j=soup.find_all('ul',attrs={'class':'a-unordered-list a-nostyle a-vertical s-ref-indent-two'})
+k=j[0]
+l=k.find_all('a',attrs={'class':'a-link-normal s-ref-text-link'})
+
+
+for i in range(len(l)):
+    m=l[i]
+    subcat_link=m['href']
+    print(subcat_link)
+    sub_cat=m.text
+    sub_cat_name_all.append(sub_cat)
+    sub_cat_link_all.append(subcat_link)
+
+df_subcatname_subcatlink=pd.DataFrame({'subcategory_name':sub_cat_name_all, 'link to subcategories':sub_cat_link_all})
+
+################################ SUBCAT SEE MORE BUTTONS####################
+################################ SUBCAT SEE MORE BUTTONS####################
+################################ SUBCAT SEE MORE BUTTONS####################
+################################ SUBCAT SEE MORE BUTTONS####################
+################################ SUBCAT SEE MORE BUTTONS####################
+
+subcat_name_list=[]
+subcat_link_list=[]
+subcat_brand_button_list=[]
+subcat_seller_button_list=[]
+visible_subcat_name_list=[]
+visible_subcat_link_list=[]
+visible_subcat_brand_seller_list=[]
+subcat_sku_count_final_list=[]
+
+for j in range(len(sub_cat_link_all)):
+    with suppress(Exception):
+        url1=sub_cat_link_all[j]
+        #url1
+        payload = {'key': 'e0a42cf476b6ac88254a90bd4d89fa7c', 'url': url1,'us_only': 'true'}
+        subcat_page_ping = requests.get(q,params=payload,timeout=60)
+        print(subcat_page_ping)
+        sleep(randint(10,15))
+        #subcat_page_ping
+#        page = requests.get(j,headers=headers)
+#        sleep(randint(10,15))
+        #print(index)
+        
+        subcat_page_contents = subcat_page_ping.content 
+        
+        #print(subcat_page_contents)
+        subcat_page_soup = BeautifulSoup(subcat_page_contents, "lxml")
+        #soup1.prettify()
+
+        subcat_page_name=subcat_page_soup.title
+        subcat_page_name_final=subcat_page_name.text
+        print(subcat_page_name_final)
+        subcat_sku_count=subcat_page_soup.find('span',attrs={'id':'s-result-count'})
+        subcat_sku_count_final=subcat_sku_count.text
+        print(subcat_sku_count_final)
+
+        #subcat_all_left_nav_html=subcat_page_soup.find_all('a',attrs={'class':'a-link-normal s-ref-text-link'})
+        #print(subcat_all_left_nav_html)
+        
+        ######### FOR ALL 
+        visible_all_brand_seller_subcat_html=subcat_page_soup.find_all("span",attrs={'class':'a-size-small a-color-base s-ref-text-link s-ref-link-cursor'})
+        #visible_all_brand_seller_subcat_html
+        
+        for r in range(len(visible_all_brand_seller_subcat_html)):
+            visible_all_brand_seller_subcat=visible_all_brand_seller_subcat_html[r]
+            print(visible_all_brand_seller_subcat)
+            visible_all_brand_seller_subcat_final=visible_all_brand_seller_subcat.text
+            (visible_all_brand_seller_subcat_final)
+            visible_subcat_name_list.append(subcat_page_name_final)
+            visible_subcat_link_list.append(url1)
+            visible_subcat_brand_seller_list.append(visible_all_brand_seller_subcat_final)
+            
+            
+        #print(subcat_all_left_nav_html)
+    
+
+################ Below 4 lines will get brand see more button url ##########3
+
+        import re
+        subcat_brand_button_find=subcat_page_soup.find_all("a", href=re.compile("lbr_brands"))[0]        
+        subcat_brand_button='https://www.amazon.com'+ subcat_brand_button_find['href']
+        print(subcat_brand_button)
+        #subcat_brand_button
+        
+        
+        subcat_seller_button_find=subcat_page_soup.find_all("a", href=re.compile("merchantbin"))[0]
+        subcat_seller_button='https://www.amazon.com'+ subcat_seller_button_find['href']
+        print(subcat_seller_button)
+        #subcat_seller_button
+        
+        subcat_name_list.append(subcat_page_name_final)
+        subcat_link_list.append(j)
+        subcat_brand_button_list.append(subcat_brand_button)
+        subcat_seller_button_list.append(subcat_seller_button)
+        subcat_sku_count_final_list.append(subcat_sku_count_final)
+        
+df_seemore_button_list = pd.DataFrame({'subcat':subcat_name_list, 'subcat link': subcat_link_list,'subcat sku count':subcat_sku_count_final_list,'see more brand button link': subcat_brand_button_list,'see more seller button link':subcat_seller_button_list})
+df_visible_all_subcat= pd.DataFrame({'subcat':visible_subcat_name_list, 'subcat link': visible_subcat_link_list,'visible': visible_subcat_brand_seller_list})
+##################################################################################################################3
+############################### BRANDS #################################    
+############################### BRANDS #################################    
+############################### BRANDS #################################    
+############################### BRANDS #################################    
+
+
+subcat_name_for_brand_page_list=[]
+subcat_link_for_brand_page=[]
+subcat_brand_name=[]
+subcat_brand_sku=[]
+subcat_brand_link=[]
+url3=[]
+
+    ############ Going into top brands page using below code ########
+for j in range(len(subcat_brand_button_list)):
+    with suppress(Exception):
+        url2=subcat_brand_button_list[j]
+        url2
+        subcat_name_for_brand_page=subcat_name_list[j]
+        payload = {'key': 'e0a42cf476b6ac88254a90bd4d89fa7c', 'url':url2, 'us_only': 'true'}
+        subcat_brandpage_ping = requests.get(q,params=payload,timeout=60)
+        print(subcat_brandpage_ping)
+        sleep(randint(10,15))
+            
+        subcat_brandpage_contents = subcat_brandpage_ping.content 
+        subcat_brandpage_soup = BeautifulSoup(subcat_brandpage_contents, "lxml")
+################## ALL TOP BRANDS LIST HTML ############
+       
+        subcat_brandpage_html=subcat_brandpage_soup.find_all('span',attrs={'class':'a-list-item'})
+
+############ EXTRACTING BRAND NAME, SKU in BRACKETS, LINK TO ALL BRANDS #########         
+
+        for i in range(len(subcat_brandpage_html)):
+            t=subcat_brandpage_html[i]
+            name_of_subcat_brands=t.find('span',attrs={'class':'refinementLink'})
+            name_of_subcat_brands_final=name_of_subcat_brands.text
+            
+                
+            count_of_subcat_brands=t.find('span',attrs={'class':'narrowValue'})
+            count_of_subcat_brands_final=count_of_subcat_brands.text
+            #count_of_subcat_brands_finai
+                
+            link_to_specific_subcat_brand=t.find('a',attrs={'class':'a-link-normal'})
+            link_to_specific_subcat_brand_final='https://www.amazon.com'+ link_to_specific_subcat_brand['href']
+            #link_to_specific_subcat_brand_final
+                
+            subcat_name_for_brand_page_list.append(subcat_name_for_brand_page)
+            url3.append(url2)
+            subcat_brand_name.append(name_of_subcat_brands_final)
+            subcat_brand_sku.append(count_of_subcat_brands_final)
+            subcat_brand_link.append(link_to_specific_subcat_brand_final)
+    
+
+df_subcat_all_brands = pd.DataFrame({'subcat name' :subcat_name_for_brand_page_list, 'subcat link': url3,'brand name': subcat_brand_name,'brand sku':subcat_brand_sku,'brand link':subcat_brand_link})
+df_subcat_all_brands            
+
+
+#################### SUBCAT SELLERS #########################################
+#################### SUBCAT SELLERS #########################################
+#################### SUBCAT SELLERS #########################################
+#################### SUBCAT SELLERS #########################################
+
+
+subcat_name_for_seller_page_list=[]
+subcat_link_for_seller_page=[]
+subcat_seller_name=[]
+subcat_seller_sku=[]
+subcat_seller_link=[]
+url4=[]
+
+for j in range(len(subcat_brand_button_list)):
+    with suppress(Exception):
+        url5=subcat_seller_button_list[j]        
+        subcat_name_for_seller_page=subcat_name_list[j]
+        payload = {'key': 'e0a42cf476b6ac88254a90bd4d89fa7c', 'url':url5, 'us_only': 'true'}
+        subcat_sellerpage_ping = requests.get(q,params=payload,timeout=60)
+        print(subcat_sellerpage_ping)
+        sleep(randint(10,15))
+            
+        subcat_sellerpage_contents = subcat_sellerpage_ping.content 
+        subcat_sellerpage_soup = BeautifulSoup(subcat_sellerpage_contents, "lxml")
+       
+        subcat_sellerpage_html=subcat_sellerpage_soup.find_all('span',attrs={'class':'a-list-item'})
+        
+        for i in range(len(subcat_sellerpage_html)):
+            t_seller=subcat_sellerpage_html[i]
+            name_of_subcat_seller=t_seller.find('span',attrs={'class':'refinementLink'})
+            name_of_subcat_seller_final=name_of_subcat_seller.text
+            
+                
+            count_of_subcat_sellers=t_seller.find('span',attrs={'class':'narrowValue'})
+            count_of_subcat_sellers_final=count_of_subcat_sellers.text
+            #count_of_subcat_brands_finai
+                
+            link_to_specific_subcat_seller=t_seller.find('a',attrs={'class':'a-link-normal'})
+            link_to_specific_subcat_seller_final='https://www.amazon.com'+ link_to_specific_subcat_seller['href']
+            #link_to_specific_subcat_brand_final
+                
+            subcat_name_for_seller_page_list.append(subcat_name_for_seller_page)
+            url4.append(url5)
+            subcat_seller_name.append(name_of_subcat_seller_final)
+            subcat_seller_sku.append(count_of_subcat_sellers_final)
+            subcat_seller_link.append(link_to_specific_subcat_seller_final)
+            
+df_subcat_all_sellers = pd.DataFrame({'subcat name' :subcat_name_for_seller_page_list, 'subcat link': url4,'seller name': subcat_seller_name,'seller sku':subcat_seller_sku,'seller link':subcat_seller_link})
+df_subcat_all_sellers            
+           
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+ ###################################################################
+            
+df_brand = pd.DataFrame({'category_name':category_name_brand, 'brand_name': brand1,'sku count next to brand': sku_brand1,'link to individual brand':link_brand1,'category or subcategory':g,'subcategory SKU count':subcategory_SKU_count_brand})
+df_seller= pd.DataFrame({'category_name':category_name_seller, 'seller_name': seller1,'sku count next to seller': sku_seller1,'link to individual seller':link_seller1,'category or subcategory':g,'subcategory SKU count':subcategory_SKU_count_seller})
+df_completecategory_topbrands=pd.DataFrame({'category_name':category_name_categorypage, 'category or subcategory':c,'brand_name': brand1_categorypage,'sku count next to brand': sku_brand1_categorypage,'link to these brands':link_brand1_categorypage})
+
+import pandas as pd
+
+writer = pd.ExcelWriter('Amazon ice2.xlsx', engine='xlsxwriter',options={'strings_to_urls': False})
+df_brand.to_excel(writer, sheet_name='Brands')
+df_seller.to_excel(writer, sheet_name='Sellers')
+df_completecategory_topbrands.to_excel(writer, sheet_name='whole cat top brands')
+writer.save()
