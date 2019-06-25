@@ -1,0 +1,82 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+
+@author: sidharth-jain
+"""
+
+import nltk
+nltk.download('wordnet')
+
+target_dlps_file=pd.ExcelFile("/Users/z003b4w/Desktop/dlps.xlsx")
+df = target_dlps_file.parse("no traffic dlps")
+links=df["dlp urls"]
+
+from nltk.stem.wordnet import WordNetLemmatizer 
+lem = WordNetLemmatizer()
+
+
+links=["https://www.target.com/s/small+toys+for+kids","https://www.target.com/s/big+toys+for+adults","https://www.target.com/s/smaller+toysz+for+kidsva","https://www.target.com/s/bigva+toys+for+adultsva"]
+
+list2=[]
+list1=[]
+cosine_values=[]
+first_link=[]
+second_link=[]
+cosine_values=[]
+for i in range(len(links)):
+    links_counter=links[i]
+    clean_links=links_counter.replace('+',' ')
+    print(clean_links)
+    clean_links_1=clean_links.replace('https://www.target.com/s/', '')
+    print(clean_links_1)
+    
+    noise_creating_words = ["I", "am", "the","this","them", "for","you","your","there","their", "is"] 
+    
+    words_split = clean_links_1.split() 
+    words_without_noise = [word for word in words_split if word not in noise_creating_words]
+
+    for j in range(len(words_without_noise)):  
+        f= words_without_noise[j]
+        after_lem=lem.lemmatize(f,"v")
+        list2.append(after_lem)
+    
+    v=' '.join(list2)
+    list2=[]
+    list1.append(v)
+
+import math
+from collections import Counter
+
+############################################################    
+def cosine_similarity(vec1, vec2):
+    common = set(vec1.keys()) & set(vec2.keys())
+    numerator = sum([vec1[x] * vec2[x] for x in common])
+            
+    sum1 = sum([vec1[x]**2 for x in vec1.keys()]) 
+    sum2 = sum([vec2[x]**2 for x in vec2.keys()]) 
+    denominator = math.sqrt(sum1) * math.sqrt(sum2)
+               
+    if not denominator:
+        return 0.0 
+    else:
+        return float(numerator) / denominator
+            
+def text_to_vector(text): 
+    words = text.split() 
+    return Counter(words)    
+        ############################################################
+
+for k in range(len(list1)):
+    vector1 = text_to_vector(list1[k])
+    for t in range(len(list1)):    
+        vector2 = text_to_vector(list1[t]) 
+        cosine = cosine_similarity(vector1, vector2)
+        first_link.append(links[k])
+        second_link.append(links[t])
+        cosine_values.append(cosine)
+
+
+import pandas as pd        
+df_cosine = pd.DataFrame({'first link':first_link,'second_link':second_link,'cosine value':cosine_values})
+
