@@ -1,0 +1,353 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+
+"""
+
+from lxml import html
+import requests
+import pandas as pd
+import numpy as np 
+from urllib.request import Request, urlopen
+from bs4 import BeautifulSoup
+from contextlib import suppress
+from time import sleep
+from random import randint
+from time import time
+import requests
+from lxml.html import fromstring
+from contextlib import suppress
+import pandas as pd
+
+#The excel file below contains brand name and link to that brand name store on Amazon
+q= 'http://api.scraperapi.com'
+
+
+Amazon_link_list=[]
+product_link_list=[]
+product_price_list=[]
+product_seller1_list=[]
+product_reviews_list=[]
+product_ratings_list=[]
+product_images1_list=[]
+product_videos_list=[]
+product_bullet_final_list=[]
+product_description1_list=[]
+product_comparison1_list=[]
+product_qa1_list=[]
+product_title_list=[]
+product_brand_list=[]
+product_description2_list=[]
+product_reviews2_list=[]
+xlsx1=pd.ExcelFile("/Users/z003b4w/Desktop/2019_05_Low Converting Items.xlsx")
+df = xlsx1.parse("Top 50 Visited Low Conversion")
+links=df["title"]
+links2=links[0:1000]
+links2[1]
+
+def strip_function(text):
+    text=text.lstrip()
+    text=text.rstrip()
+    return text
+
+for i in range(len(links2)):
+
+    print(i)
+    prod_name= links2[i]
+    #prod_name
+    #prod_name="CASL Brands Sit-Stand Desktop Workstation Converter with Keyboard Tray"
+    links1="https://www.amazon.com/s?k="+prod_name
+    print("Amazon search link:", links1)
+#    links1="https://www.amazon.com/s?k=Case-Mate Samsung Galaxy S8 Black Wallet Folio Case"
+    #links1="https://www.amazon.com/s?k=Mizuno Womens Wave Rider 20 Running Shoe"
+    
+    payload = {'key': 'e0a42cf476b6ac88254a90bd4d89fa7c', 'url':links1, 'us_only': 'true'}
+    page = requests.get(q,params=payload,timeout=2000)
+    #print(page)
+    #sleep(randint(10,15))
+    contents = page.content     
+    #print(contents)
+    soup = BeautifulSoup(contents, "lxml")
+    #soup.prettify()
+            
+    ########################################################################################
+    try:
+            
+        f=soup.find('div', attrs={'class': 'sg-col-4-of-24 sg-col-4-of-12 sg-col-4-of-36 s-result-item sg-col-4-of-28 sg-col-4-of-16 sg-col sg-col-4-of-20 sg-col-4-of-32'})
+        asin=f['data-asin']
+        product_link="www.amazon.com/dp/"+ asin
+#        product_link="https://www.amazon.com/Funko-POP-Rides-Thrones-Daenerys/dp/B01AW5VFP6?pf_rd_p=0fc3f2c4-3ed5-4d11-9995-8d7c82394713&pd_rd_wg=CIZMS&pf_rd_r=1BZAF9A7VQ2W638JDT3J&ref_=pd_gw_cr_simh&pd_rd_w=B8VdD&pd_rd_r=04a0a308-e6d5-4473-b97d-eccfbcdc6e43"
+    
+    #####################################################        
+        payload = {'key': 'e0a42cf476b6ac88254a90bd4d89fa7c', 'url':product_link, 'us_only': 'true'}
+        product_page = requests.get(q,params=payload,timeout=2000)
+        #print(product_page)
+        #sleep(randint(10,15))
+        product_contents = product_page.content     
+        #print(contents)
+        soup1 = BeautifulSoup(product_contents, "lxml")
+        soup1.prettify()
+    except AttributeError:
+        soup1="Not Found"
+    except TypeError:
+        soup1="Not Found"
+ ########################################################################       
+
+    if soup1=="Not Found":
+        try:                
+            f=soup.find('div', attrs={'class': 'sg-col-20-of-24 s-result-item sg-col-0-of-12 sg-col-28-of-32 sg-col-16-of-20 sg-col sg-col-32-of-36 sg-col-12-of-16 sg-col-24-of-28'})
+            
+            asin=f['data-asin']
+            product_link="www.amazon.com/dp/"+ asin
+            
+        
+            payload = {'key': 'e0a42cf476b6ac88254a90bd4d89fa7c', 'url':product_link, 'us_only': 'true'}
+            product_page = requests.get(q,params=payload,timeout=2000)
+            #print(page)
+            #sleep(randint(10,15))
+            product_contents = product_page.content     
+            #print(contents)
+            soup1 = BeautifulSoup(product_contents, "lxml")
+            soup1.prettify()
+        except AttributeError:
+            soup1="Not Found"
+        except TypeError:
+            soup1="Not Found"
+            
+    else:
+        print('Hi')
+            
+    ####################################################
+    try:
+        product_title=soup1.find('span', attrs={'id': 'productTitle'})
+        product_title=product_title.text
+        product_title=strip_function(product_title)
+    except AttributeError:
+        product_title="Not Found"
+    except TypeError:
+        product_title="Not Found"
+    print("product title:", product_title)
+    ######################################################
+    try:
+        product_brand=soup1.find('a', attrs={'id': 'bylineInfo'})
+        product_brand=product_brand.text
+    except AttributeError:
+        product_brand="Not Found"
+    except TypeError:
+        product_brand="Not Found"
+
+    
+    if product_brand=="Not Found":
+        try:                
+            product_brand=soup1.find('a', attrs={'class': 'a-link-normal contributorNameID'})
+            product_brand=product_brand.text
+        except AttributeError:
+            product_brand="Not Found"
+        except TypeError:
+            product_brand="Not Found"
+    else:
+        print('Hi')
+    #print("product brand:", product_brand)
+   ################################PRICE#######################
+    
+    
+    try:
+        product_price=soup1.find('span', attrs={'class': 'a-size-medium a-color-price priceBlockBuyingPriceString'})
+        product_price=product_price.text
+    except AttributeError:
+        product_price="Not Found"
+    except TypeError:
+        product_price="Not Found"
+
+    
+    if product_price=="Not Found":
+        try:
+            product_price=soup1.find('span', attrs={'id': 'priceblock_ourprice'})
+            product_price=product_price.text
+            firstTest = product_price.find('$')
+            w=product_price.find('$', firstTest + 1)
+            e=product_price[w:w+8]
+            product_price=e                
+            product_price=strip_function(product_price)
+        except AttributeError:
+            product_price="Not Found"
+        except TypeError:
+            product_price="Not Found"
+    else:
+        print('Hi')
+    print('product price:', product_price)
+    ###################################################
+           ################################SELLER NAME#######################
+
+    try:
+        product_seller=soup1.find('div', attrs={'id': 'merchant-info'})
+        product_seller=product_seller.text
+        product_seller1=product_seller.replace('\n', '')
+        product_seller1=strip_function(product_seller1)
+    except AttributeError:
+        product_seller1="Not Found"
+    except TypeError:
+        product_seller1="Not Found"
+    print('product seller name:', product_seller1)
+##########################################################################################    
+                   ################################ PRODUCT REVIEWS #######################
+
+    try:
+        product_reviews=soup1.find('h2', attrs={'data-hook': 'total-review-count'})
+        product_reviews=product_reviews.text
+        product_reviews=strip_function(product_reviews)
+    except AttributeError:
+        product_reviews="Not Found"
+    except TypeError:
+        product_reviews="Not Found"
+    print('product reviews:', product_reviews)
+##########################################################################################        
+                   ################################ PRODUCT RATINGS #######################
+    try:
+        product_ratings=soup1.find('span', attrs={'data-hook': 'rating-out-of-text'})
+        product_ratings=product_ratings.text
+        
+        product_ratings=strip_function(product_ratings)
+    except AttributeError:
+        product_ratings="Not Found"
+    except TypeError:
+        product_ratings="Not Found"
+        
+    print('product rating:', product_ratings)
+##########################################################################################
+                   ################################ PRODUCT IMAGES + VIDEOS #######################
+
+    try:
+        product_images1=len(soup1.find_all('li', attrs={'class': 'a-spacing-small item'}))
+        product_images1
+    except AttributeError:
+        product_images1="Not Found"
+    except TypeError:
+        product_images1="Not Found"
+    print('number of images:', product_images1)
+        
+    try:            
+        product_videos=len(soup1.find_all('li', attrs={'class': 'a-spacing-small item videoBlockIngress videoBlockDarkIngress'}))
+        product_videos
+    except AttributeError:
+        product_videos="Not Found"
+    except TypeError:
+        product_videos="Not Found"
+    print('number of videos:', product_videos)
+##########################################################################################    
+                   ################################ PRODUCT BULLET #######################
+    try:            
+        product_bullet=soup1.find('ul', attrs={'class': 'a-unordered-list a-vertical a-spacing-none'})
+        product_bullet1=product_bullet.text
+        product_bullet1=strip_function(product_bullet1)
+    except AttributeError:
+        product_bullet1="Not Found"
+    except TypeError:
+        product_bullet1="Not Found"
+    
+
+    try:
+        product_bullet_final=product_bullet1.replace('\n', '')
+        product_bullet_final=product_bullet_final.replace('\t', '')
+        product_bullet_final=strip_function(product_bullet_final)
+    except AttributeError:
+        product_bullet_final="Not Found"
+    except TypeError:
+        product_bullet_final="Not Found"
+    #print('product bullet:', product_bullet_final)
+##########################################################################################
+                   ################################ PRODUCT DESCRIPTION #######################
+    try:            
+        product_description=soup1.find('div', attrs={'id': 'productDescription'})
+        product_description=product_description.text
+        product_description1=product_description.replace('\n', '')
+        product_description1=strip_function(product_description1)
+        #print(product_description1)
+    except AttributeError:
+        product_description1="Not Found"
+    except TypeError:
+        product_description1="Not Found"
+    #print('product description:', product_description1)
+##########################################################################################
+    ###################################################
+    try:            
+        product_description2=soup1.find('div', attrs={'class': 'a-section a-spacing-extra-large bucket'})
+        product_description2=product_description2.text
+        product_description2="Rich Content"
+        #print(product_description1)
+    except AttributeError:
+        product_description2="No Rich Content"
+    except TypeError:
+        product_description2="No Rich Content"
+    #print("Product rich or not", product_description2)
+    
+##########################################################################################    
+    ##################################################
+    try:        
+        product_comparison=soup1.find('h2', attrs={'id': 'comparison_table_title'})
+        product_comparison
+        product_comparison=product_comparison.text
+        product_comparison1=product_comparison.replace('\n', '')
+        product_comparison1=strip_function(product_comparison1)
+        #print(product_comparison1)
+    except AttributeError:
+        product_comparison1="Not Found"
+    except TypeError:
+        product_comparison1="Not Found"
+    #print("Product comparison or not", product_comparison1)
+##########################################################################################
+    ###################################################
+############################ PRODUCT REVIEWS #################################
+    try:
+        product_review_link="https://www.amazon.com/ask/questions/asin/"+asin
+        payload = {'key': 'e0a42cf476b6ac88254a90bd4d89fa7c', 'url':product_review_link, 'us_only': 'true'}
+        product_review_page = requests.get(q,params=payload,timeout=2000)
+        #print(product_review_page)
+            #sleep(randint(10,15))
+        product_review_contents = product_review_page.content     
+            #print(contents)
+        soup2 = BeautifulSoup(product_review_contents, "lxml")
+        soup2.prettify()
+    except AttributeError:
+        soup2="Not Found"
+    except TypeError:
+        soup2="Not Found"
+        
+    try:
+        number_of_qa=soup2.find('div', attrs={'class': 'a-section askPaginationHeaderMessage'})
+        number_of_qa=number_of_qa.text
+    except AttributeError:
+        number_of_qa="Not Found"
+    except TypeError:
+        product_reviews2="Not Found"
+    print(number_of_qa)   
+        
+##########################################################################################
+    
+
+    
+    Amazon_link_list.append(links1)
+    product_link_list.append(product_link)
+    product_price_list.append(product_price)
+    product_seller1_list.append(product_seller1)
+    product_reviews_list.append(product_reviews)
+    product_ratings_list.append(product_ratings)
+    product_images1_list.append(product_images1)
+    product_videos_list.append(product_videos)
+    product_bullet_final_list.append(product_bullet_final)
+    product_description1_list.append(product_description1)
+    product_comparison1_list.append(product_comparison1)
+#    product_qa1_list.append(product_qa1)
+    product_title_list.append(product_title)
+    product_brand_list.append(product_brand)
+    product_description2_list.append(product_description2)
+    product_reviews2_list.append(number_of_qa)
+    ####################################################
+        
+df_product_performance = pd.DataFrame({'Amazon listing page link':Amazon_link_list, 'Product_link':product_link_list, 'Product title':product_title_list,'Product Brand':product_brand_list, 'Product Price':product_price_list,'Product seller': product_seller1_list, 'Product reviews':product_reviews_list, 'Product Ratings':product_ratings_list,'Product Images':product_images1_list,'Product Videos': product_videos_list, 'Product bullets':product_bullet_final_list, 'Product description':product_description1_list, 'Product Comparison':product_comparison1_list,'Product QA':product_reviews2_list})
+df_product_performance
+
+writer = pd.ExcelWriter('Product Performance14.xlsx', engine='xlsxwriter',options={'strings_to_urls': False})
+df_product_performance.to_excel(writer, sheet_name='Amazon product performance')
+writer.save()
+
